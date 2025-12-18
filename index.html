@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="cs">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tower Defense - Advanced</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="game-container">
+        <canvas id="gameCanvas"></canvas>
+
+        <!-- Top UI -->
+        <div class="ui-top">
+            <div class="money-display">
+                <span class="icon">💰</span>
+                <span id="money">100</span>
+            </div>
+            <div class="wave-display">
+                <span class="icon">🌊</span>
+                <span>Vlna: </span>
+                <span id="wave">1</span>
+            </div>
+            <div class="speed-control" id="speedBtn" onclick="cycleSpeed()">
+                <span class="icon">⏩</span>
+                <span id="speedText">1x</span>
+            </div>
+            <div class="rush-control" id="rushBtn" onclick="rushWave()">
+                <span class="icon">☠️</span>
+                <span>RUSH</span>
+            </div>
+            <div class="crystals-display">
+                <span class="icon">💎</span>
+                <span id="crystals">0</span>
+            </div>
+            <div class="score-display">
+                <span class="icon">⭐</span>
+                <span id="score">0</span>
+            </div>
+        </div>
+
+        <!-- Tower Health Bar -->
+        <div class="tower-health">
+            <div class="health-bar">
+                <div class="health-fill" id="healthBar"></div>
+            </div>
+            <span id="healthText">100/100</span>
+        </div>
+
+        <!-- Stats Panel -->
+        <div class="stats-panel" id="statsPanel">
+            <div class="stat-item stat-hp">
+                <span class="stat-icon">❤️</span>
+                <span class="stat-label">HP</span>
+                <span class="stat-value" id="statHP">100/100</span>
+            </div>
+            <div class="stat-item stat-regen">
+                <span class="stat-icon">💚</span>
+                <span class="stat-label">REG</span>
+                <span class="stat-value" id="statRegen">0/s</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-icon">🔥</span>
+                <span class="stat-label">DMG</span>
+                <span class="stat-value" id="statDamage">10</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-icon">⚡</span>
+                <span class="stat-label">SPD</span>
+                <span class="stat-value" id="statSpeed">1.0/s</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-icon">🎯</span>
+                <span class="stat-label">RNG</span>
+                <span class="stat-value" id="statRange">200</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-icon">💥</span>
+                <span class="stat-label">CRIT</span>
+                <span class="stat-value" id="statCrit">0%</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-icon">☠️</span>
+                <span class="stat-label">C.DMG</span>
+                <span class="stat-value" id="statCritDm">x2.0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-icon">📍</span>
+                <span class="stat-label">PROX</span>
+                <span class="stat-value" id="statProx">0%</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-icon">🔱</span>
+                <span class="stat-label">MULTI</span>
+                <span class="stat-value" id="statMulti">0%</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-icon">🏹</span>
+                <span class="stat-label">TGT</span>
+                <span class="stat-value" id="statTargets">1</span>
+            </div>
+            <div class="stat-item" style="display:none">
+                <span class="stat-icon">🍀</span>
+                <span class="stat-label">LUCK</span>
+                <span class="stat-value" id="statLuck">0%</span>
+            </div>
+            <div class="stat-item" style="display:none">
+                <span class="stat-icon">🛡️</span>
+                <span class="stat-label">DEF</span>
+                <span class="stat-value" id="statDefense">0%</span>
+            </div>
+            <div class="stat-item" style="display:none">
+                <span class="stat-icon">🧱</span>
+                <span class="stat-label">ARM</span>
+                <span class="stat-value" id="statArmor">0</span>
+            </div>
+            <div class="stat-item" style="display:none">
+                <span class="stat-icon">🌹</span>
+                <span class="stat-label">THRN</span>
+                <span class="stat-value" id="statThorns">0</span>
+            </div>
+            <div class="stat-item" style="display:none">
+                <span class="stat-icon">🧛</span>
+                <span class="stat-label">LIFE</span>
+                <span class="stat-value" id="statLifesteal">0%</span>
+            </div>
+        </div>
+
+        <!-- Ultimate Panel -->
+        <div class="ultimate-panel">
+            <div class="ult-header">⚡ Ultimátky (Q/W/E/R)</div>
+            <div class="ultimate-buttons" id="ultimatePanel"></div>
+        </div>
+
+        <!-- Upgrade Panel with Tabs -->
+        <div class="upgrade-panel" id="upgradePanel">
+            <div class="upgrade-tabs">
+                <button class="tab-btn active" data-tab="attack">⚔️ Attack</button>
+                <button class="tab-btn" data-tab="defense">🛡️ Defense</button>
+                <button class="tab-btn" data-tab="utility">💰 Utility</button>
+                <button class="tab-btn" data-tab="special">⚙️ Specials</button>
+            </div>
+            <div class="upgrade-content" id="upgradeContent"></div>
+        </div>
+
+        <!-- Game Over Screen -->
+        <div class="game-over" id="gameOver">
+            <div class="game-over-content">
+                <h1>GAME OVER</h1>
+                <div class="game-stats">
+                    <p>Vlna: <span id="finalWave">0</span></p>
+                    <p>Skóre: <span id="finalScore">0</span></p>
+                    <p class="crystals-earned">💎 Získáno: <span id="crystalsEarned">0</span></p>
+                </div>
+
+                <!-- Permanent Upgrades Section -->
+                <div class="perm-upgrade-section">
+                    <h3>💎 Permanentní Vylepšení (<span id="totalCrystals">0</span>💎)</h3>
+                    <div class="perm-tabs">
+                        <button class="perm-tab active" data-permtab="attack">⚔️</button>
+                        <button class="perm-tab" data-permtab="defense">🛡️</button>
+                        <button class="perm-tab" data-permtab="utility">💰</button>
+                    </div>
+                    <div class="perm-content" id="permContent"></div>
+                    <p class="perm-info">Tyto bonusy zůstávají trvale!</p>
+                </div>
+
+                <button class="restart-btn" id="restartBtn">🔄 Hrát Znovu</button>
+            </div>
+        </div>
+
+        <!-- Start Screen -->
+        <div class="start-screen" id="startScreen">
+            <h1>🏰 TOWER DEFENSE</h1>
+            <p>Braň svou věž před vlnami nepřátel!</p>
+            <div class="controls-info">
+                <p>Q/W/E/R - Ultimátky | 1-3 - Taby</p>
+            </div>
+            <button class="start-btn" id="startBtn">▶️ Začít Hru</button>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+
+</html>
